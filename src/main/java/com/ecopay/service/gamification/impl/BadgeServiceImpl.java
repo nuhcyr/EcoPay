@@ -36,7 +36,7 @@ public class BadgeServiceImpl implements BadgeService {
     @Override
     @Transactional
     public UserRewardResponse claimReward(String userEmail, Long rewardId) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Reward reward = rewardRepository.findById(rewardId)
                 .orElseThrow(() -> new IllegalArgumentException("Reward not found"));
@@ -64,7 +64,7 @@ public class BadgeServiceImpl implements BadgeService {
     @Override
     @Transactional(readOnly = true)
     public List<UserRewardResponse> getMyRewards(String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         return userRewardRepository.findByUserId(user.getId()).stream()
                 .map(this::toUserRewardResponse)
@@ -74,7 +74,7 @@ public class BadgeServiceImpl implements BadgeService {
     @Override
     @Transactional
     public UserRewardResponse useReward(String userEmail, Long userRewardId) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         UserReward userReward = userRewardRepository.findByIdAndUserId(userRewardId, user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Reward claim not found"));

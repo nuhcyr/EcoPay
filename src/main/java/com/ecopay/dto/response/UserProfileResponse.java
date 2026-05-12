@@ -6,6 +6,10 @@ public record UserProfileResponse(
         Long id,
         String email,
         Integer totalPoints,
-        UserLevel level
+        UserLevel level,
+        Long companyId,
+        String companyName,
+        String companyInviteCode,
+        Boolean companyOwner
 ) {
 }

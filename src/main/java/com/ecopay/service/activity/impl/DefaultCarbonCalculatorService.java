@@ -10,11 +10,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultCarbonCalculatorService implements CarbonCalculatorService {
 
-    private static final Map<ActivityType, BigDecimal> FACTORS = Map.of(
-            ActivityType.CAR, new BigDecimal("0.21"),
-            ActivityType.BUS, new BigDecimal("0.08"),
-            ActivityType.BIKE, BigDecimal.ZERO,
-            ActivityType.WALK, BigDecimal.ZERO
+    /**
+     * kg CO₂ / km — gösterim ve oyunlaştırma için sadeleştirilmiş katsayılar (bilimsel rapor değildir).
+     */
+    private static final Map<ActivityType, BigDecimal> FACTORS = Map.ofEntries(
+            Map.entry(ActivityType.CAR, new BigDecimal("0.21")),
+            Map.entry(ActivityType.BUS, new BigDecimal("0.08")),
+            Map.entry(ActivityType.BIKE, BigDecimal.ZERO),
+            Map.entry(ActivityType.WALK, BigDecimal.ZERO),
+            Map.entry(ActivityType.METRO, new BigDecimal("0.03")),
+            Map.entry(ActivityType.TRAIN, new BigDecimal("0.04")),
+            Map.entry(ActivityType.E_SCOOTER, new BigDecimal("0.02")),
+            Map.entry(ActivityType.EV_CAR, new BigDecimal("0.05"))
     );
 
     @Override

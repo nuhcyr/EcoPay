@@ -30,7 +30,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     @Transactional
     public ActivityResponse create(String userEmail, ActivityCreateRequest request) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Activity activity = new Activity();
@@ -52,9 +52,9 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     @Transactional(readOnly = true)
     public List<ActivityResponse> getMyActivities(String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailIgnoreCase(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return activityRepository.findByUserId(user.getId()).stream()
+        return activityRepository.findByUserIdOrderByCreatedAtDesc(user.getId()).stream()
                 .map(activityMapper::toResponse)
                 .toList();
     }

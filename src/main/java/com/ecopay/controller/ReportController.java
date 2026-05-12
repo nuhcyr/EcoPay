@@ -1,6 +1,7 @@
 package com.ecopay.controller;
 
 import com.ecopay.dto.response.ReportSummaryResponse;
+import com.ecopay.dto.response.WeeklyReportResponse;
 import com.ecopay.service.report.ReportService;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,10 @@ public class ReportController {
     @GetMapping("/me/summary")
     public ResponseEntity<ReportSummaryResponse> getMySummary(Principal principal) {
         return ResponseEntity.ok(reportService.getMySummary(principal.getName()));
+    }
+
+    @GetMapping("/me/weekly")
+    public ResponseEntity<WeeklyReportResponse> getMyWeekly(Principal principal) {
+        return ResponseEntity.ok(reportService.getMyWeekly(principal.getName()));
     }
 }

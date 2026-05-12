@@ -11,6 +11,7 @@ import com.ecopay.repository.UserRepository;
 import com.ecopay.security.JwtTokenProvider;
 import com.ecopay.service.auth.AuthService;
 import java.time.Instant;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,12 +29,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse register(AuthRegisterRequest request) {
-        if (userRepository.findByEmail(request.email()).isPresent()) {
+        String email = normalizeEmail(request.email());
+        if (userRepository.findByEmailIgnoreCase(email).isPresent()) {
             throw new IllegalArgumentException("Email already exists");
         }
 
         User user = new User();
-        user.setEmail(request.email());
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.password()));
         userRepository.save(user);
 
@@ -41,9 +43,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(AuthLoginRequest request) {
-        User user = userRepository.findByEmail(request.email())
+        String email = normalizeEmail(request.email());
+        User user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
@@ -94,6 +97,13 @@ public class AuthServiceImpl implements AuthService {
             token.setRevokedAt(Instant.now());
             refreshTokenRepository.save(token);
         });
+    }
+
+    private static String normalizeEmail(String raw) {
+        if (raw == null || raw.isBlank()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        return raw.trim().toLowerCase(Locale.ROOT);
     }
 
     private AuthResponse createTokens(String email) {
